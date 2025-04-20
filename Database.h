@@ -10,6 +10,6 @@ class Database {
     sql::mysql::MySQL_Driver* driver;
     unique_ptr<sql::Connection> con;
 public:
-    Database(const std::string& host, const std::string& user, const std::string& password, const std::string& schema);
-    void executeAndPrint(const std::string& query);
+    Database(const string& host, const string& user, const string& password, const string& schema);
+    void executeAndPrint(const string& query);
 };
