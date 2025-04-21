@@ -24,3 +24,9 @@ void Database::executeAndPrint(const string& query) {
         cout << endl;
     }
 }
+
+
+void Database::executeUpdate(const string& query) {
+    unique_ptr<sql::Statement> stmt(con->createStatement());
+    stmt->executeUpdate(query);
+}

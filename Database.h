@@ -12,4 +12,6 @@ class Database {
 public:
     Database(const string& host, const string& user, const string& password, const string& schema);
     void executeAndPrint(const string& query);
+
+    void executeUpdate(const string& query);
 };
