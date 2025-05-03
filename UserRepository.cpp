@@ -1,37 +1,65 @@
 #include "UserRepository.h"
+#include <mysql/jdbc.h>
 #include <sstream>
 
-// Inicjalizacja statycznej zmiennej
+// inicjalizacja singletona
 UserRepository* UserRepository::instance = nullptr;
 
-// Prywatny konstruktor
 UserRepository::UserRepository(Database& db) : BaseRepository(db) {
+    loadUsers();
 }
+UserRepository::~UserRepository() {}
 
-// Destruktor
-UserRepository::~UserRepository() {
-}
-
-// Implementacja Singletona
 UserRepository* UserRepository::getInstance(Database& db) {
-    if (instance == nullptr) {
-        instance = new UserRepository(db);
-    }
+    if (!instance) instance = new UserRepository(db);
     return instance;
 }
 
-// Dodawanie użytkownika
+void UserRepository::loadUsers() {
+    users.clear();
+    try {
+        auto stmt = unique_ptr<sql::Statement>(
+            db.getConnection()->createStatement()
+        );
+        auto res = unique_ptr<sql::ResultSet>(
+            stmt->executeQuery("SELECT id, name, surname FROM users")
+        );
+        while (res->next()) {
+            users.emplace_back(
+                res->getInt("id"),
+                res->getString("name"),
+                res->getString("surname")
+            );
+        }
+    } catch (sql::SQLException& e) {
+        cerr << "Błąd podczas ładowania użytkowników: " << e.what() << endl;
+    }
+}
+
 bool UserRepository::add(const User& user) {
     try {
-        stringstream query;
-        query << "INSERT INTO users (name, surname) VALUES ('"
-              << user.getName() << "', '" 
-              << user.getSurname() << "')";
-        
-        db.executeUpdate(query.str());
+        stringstream q;
+        q << "INSERT INTO users (name, surname) VALUES ('"
+          << user.getName() << "','" << user.getSurname() << "')";
+        db.executeUpdate(q.str());
+        refresh();
         return true;
     } catch (sql::SQLException& e) {
         cerr << "Błąd podczas dodawania użytkownika: " << e.what() << endl;
         return false;
     }
+}
+
+vector<User> UserRepository::getAll() {
+    return users;
+}
+
+void UserRepository::displayAll() {
+    cout << "ID\tImię\tNazwisko" << endl;
+    cout << "--------------------------" << endl;
+    for (auto& u : users) u.view();
+}
+
+void UserRepository::refresh() {
+    loadUsers();
 }

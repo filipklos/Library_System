@@ -1,5 +1,4 @@
 #pragma once
-#include <iostream>
 #include <mysql/jdbc.h>
 #include <memory>
 #include <string>
@@ -11,7 +10,10 @@ class Database {
     unique_ptr<sql::Connection> con;
 public:
     Database(const string& host, const string& user, const string& password, const string& schema);
-    void executeAndPrint(const string& query);
-
+    // INSERT/UPDATE/DELETE
     void executeUpdate(const string& query);
+    // Pobranie ResultSet
+    unique_ptr<sql::ResultSet> executeQuery(const string& query);
+    // Ujawnienie połączenia
+    sql::Connection* getConnection() const { return con.get(); }
 };

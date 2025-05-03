@@ -6,27 +6,12 @@ Database::Database(const string& host, const string& user, const string& passwor
     con->setSchema(schema);
 }
 
-void Database::executeAndPrint(const string& query) {
-    unique_ptr<sql::Statement> stmt(con->createStatement());
-    unique_ptr<sql::ResultSet> res(stmt->executeQuery(query));
-    sql::ResultSetMetaData* meta = res->getMetaData();
-    int columnCount = meta->getColumnCount();
-
-    // Nagłówki
-    for (int i = 1; i <= columnCount; ++i)
-        cout << meta->getColumnName(i) << " ";
-    cout << endl;
-
-    // Wiersze
-    while (res->next()) {
-        for (int i = 1; i <= columnCount; ++i)
-            cout << res->getString(i) << " ";
-        cout << endl;
-    }
+void Database::executeUpdate(const string& query) {
+    auto stmt = unique_ptr<sql::Statement>(con->createStatement());
+    stmt->executeUpdate(query);
 }
 
-
-void Database::executeUpdate(const string& query) {
-    unique_ptr<sql::Statement> stmt(con->createStatement());
-    stmt->executeUpdate(query);
+unique_ptr<sql::ResultSet> Database::executeQuery(const string& query) {
+    auto stmt = unique_ptr<sql::Statement>(con->createStatement());
+    return unique_ptr<sql::ResultSet>(stmt->executeQuery(query));
 }

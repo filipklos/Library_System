@@ -2,43 +2,73 @@
 #include "config.h"
 #include "User.h"
 #include "UserRepository.h"
+#include <limits>
+
+void displayMenu() {
+    cout << "\n----System Biblioteczny----" << endl;
+    cout << "1. Dodaj użytkownika" << endl;
+    cout << "2. Wyświetl listę użytkowników" << endl;
+    cout << "0. Wyjdź" << endl;
+    cout << "Wybierz opcję: ";
+}
 
 int main() {
     try {
         // Utworzenie połączenia z bazą danych
         Database db(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-
-        // Wyświetlenie obecnych użytkowników
-        cout << "Aktualni użytkownicy:" << endl;
-        db.executeAndPrint("SELECT * FROM users");
-        cout << endl;
-
-        // Pobranie danych nowego użytkownika
-        string name, surname;
-        cout << "Dodawanie nowego użytkownika:" << endl;
-        cout << "Podaj imię: ";
-        cin >> name;
-        cout << "Podaj nazwisko: ";
-        cin >> surname;
-
-        // Utworzenie użytkownika
-        User newUser(name, surname);
-
-        // Dodanie użytkownika do bazy danych
         UserRepository* repo = UserRepository::getInstance(db);
-
-        if (repo->add(newUser)) {
-            cout << "Użytkownik dodany pomyślnie!" << endl;
+        
+        int choice = -1;
+        
+        do {
+            displayMenu();
+            cin >> choice;
+            
+            // Obsługa nieprawidłowego wejścia
+            if (cin.fail()) {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "Nieprawidłowy wybór. Spróbuj ponownie." << endl;
+                continue;
+            }
+            
+            switch (choice) {
+                case 1: {
+                    // Dodawanie użytkownika
+                    string name, surname;
+                    cout << "\nDodawanie nowego użytkownika:" << endl;
+                    cout << "Podaj imię: ";
+                    cin >> name;
+                    cout << "Podaj nazwisko: ";
+                    cin >> surname;
                     
-            cout << endl << "Zaktualizowana lista użytkowników:" << endl;
-            db.executeAndPrint("SELECT * FROM users");
-        } else {
-            cout << "Błąd podczas dodawania użytkownika!" << endl;
-        }
-
+                    User newUser(name, surname);
+                    
+                    if (repo->add(newUser)) {
+                        cout << "Użytkownik dodany pomyślnie!" << endl;
+                    } else {
+                        cout << "Błąd podczas dodawania użytkownika!" << endl;
+                    }
+                    break;
+                }
+                case 2:
+                    // Wyświetlanie użytkowników
+                    cout << "\nLista użytkowników:" << endl;
+                    repo->displayAll();
+                    break;
+                case 0:
+                    cout << "Zamykanie aplikacji..." << endl;
+                    break;
+                default:
+                    cout << "Nieznana opcja. Spróbuj ponownie." << endl;
+            }
+            
+        } while (choice != 0);
+        
     } catch (sql::SQLException& e) {
         cerr << "Błąd SQL: " << e.what() << endl;
         return 1;
     }
+    
     return 0;
 }

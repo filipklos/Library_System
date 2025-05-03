@@ -8,8 +8,14 @@ private:
     // Singleton
     static UserRepository* instance;
     
+    // Wektor przechowujący użytkowników
+    std::vector<User> users;
+    
     // Prywatny konstruktor (wzorzec Singleton)
     UserRepository(Database& db);
+    
+    // Metoda ładująca użytkowników z bazy do wektora
+    void loadUsers();
     
 public:
     // Usunięcie konstruktora kopiującego i operatora przypisania
@@ -23,6 +29,11 @@ public:
     static UserRepository* getInstance(Database& db);
     
     bool add(const User& user);
-
-    //dodaj vector
+    vector<User> getAll();
+    
+    // Wyświetlanie wszystkich użytkowników
+    void displayAll();
+    
+    // Odświeżanie danych z bazy
+    void refresh();
 };
