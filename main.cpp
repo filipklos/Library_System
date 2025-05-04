@@ -5,9 +5,10 @@
 #include <limits>
 
 void displayMenu() {
-    cout << "\n----System Biblioteczny----" << endl;
+    cout << endl << "----System Biblioteczny----" << endl;
     cout << "1. Dodaj użytkownika" << endl;
-    cout << "2. Wyświetl listę użytkowników" << endl;
+    cout << "2. Usuń użytkownika" << endl;
+    cout << "3. Wyświetl listę użytkowników" << endl;
     cout << "0. Wyjdź" << endl;
     cout << "Wybierz opcję: ";
 }
@@ -25,7 +26,8 @@ int main() {
             cin >> choice;
             
             // Obsługa nieprawidłowego wejścia
-            if (cin.fail()) {
+            if (cin.fail())
+            {
                 cin.clear();
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 cout << "Nieprawidłowy wybór. Spróbuj ponownie." << endl;
@@ -33,10 +35,11 @@ int main() {
             }
             
             switch (choice) {
-                case 1: {
+                case 1:
+                {
                     // Dodawanie użytkownika
                     string name, surname;
-                    cout << "\nDodawanie nowego użytkownika:" << endl;
+                    cout << endl << "Dodawanie nowego użytkownika:" << endl;
                     cout << "Podaj imię: ";
                     cin >> name;
                     cout << "Podaj nazwisko: ";
@@ -44,28 +47,64 @@ int main() {
                     
                     User newUser(name, surname);
                     
-                    if (repo->add(newUser)) {
+                    if (repo->add(newUser))
+                    {
                         cout << "Użytkownik dodany pomyślnie!" << endl;
-                    } else {
+                    } else
+                    {
                         cout << "Błąd podczas dodawania użytkownika!" << endl;
                     }
                     break;
                 }
                 case 2:
+                    // Usuwanie użytkownika
+                    int id;
+                    cout << endl << "Lista użytkowników:" << endl;
+                    repo->displayAll();
+
+                    cout << endl << "Usuwanie użytkownika:" << endl;
+                    cout << "Podaj ID użytkownika do usunięcia: ";
+                    cin >> id;
+                    if (cin.fail())
+                    {
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        cout << "Nieprawne ID (to nie jest liczba)." << endl;
+                        break;
+                    }
+                    // Walidacja istnienia w repozytorium
+                    if (!repo->exists(id))
+                    {
+                        cout << "Użytkownik o ID= " << id << " nie istnieje." << endl;
+                        break;
+                    }
+                    if (repo->remove(id))
+                    {
+                        cout << "Użytkownik usunięty pomyślnie!" << endl;
+                    } else
+                    {
+                        cout << "Błąd podczas usuwania użytkownika!" << endl;
+                    }
+                    break;
+                
+                case 3:
                     // Wyświetlanie użytkowników
-                    cout << "\nLista użytkowników:" << endl;
+                    cout << endl << "Lista użytkowników:" << endl;
                     repo->displayAll();
                     break;
+
                 case 0:
                     cout << "Zamykanie aplikacji..." << endl;
                     break;
+
                 default:
                     cout << "Nieznana opcja. Spróbuj ponownie." << endl;
             }
             
         } while (choice != 0);
         
-    } catch (sql::SQLException& e) {
+    } catch (sql::SQLException& e)
+    {
         cerr << "Błąd SQL: " << e.what() << endl;
         return 1;
     }

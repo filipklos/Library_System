@@ -14,7 +14,7 @@ int User::getId() const { return id; }
 string User::getName() const { return name; }
 string User::getSurname() const { return surname; }
 
-void User::view() const {
-    // jedna spacja między polami
+void User::view() const
+{
     cout << id << " " << name << " " << surname << endl;
 }

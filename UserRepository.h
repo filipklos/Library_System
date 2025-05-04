@@ -9,7 +9,7 @@ private:
     static UserRepository* instance;
     
     // Wektor przechowujący użytkowników
-    std::vector<User> users;
+    vector<User> users;
     
     // Prywatny konstruktor (wzorzec Singleton)
     UserRepository(Database& db);
@@ -29,6 +29,8 @@ public:
     static UserRepository* getInstance(Database& db);
     
     bool add(const User& user);
+    bool remove(int id);
+    bool exists(int id) const;
     vector<User> getAll();
     
     // Wyświetlanie wszystkich użytkowników

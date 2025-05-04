@@ -1,7 +1,8 @@
 #pragma once
 #include "Database.h"
 
-class BaseRepository {
+class BaseRepository
+{
 protected:
     Database& db;
     
