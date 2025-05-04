@@ -10,6 +10,7 @@ UserRepository::UserRepository(Database& db) : BaseRepository(db)
 {
     loadUsers();
 }
+
 UserRepository::~UserRepository() {}
 
 UserRepository* UserRepository::getInstance(Database& db)

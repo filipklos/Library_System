@@ -1,10 +1,23 @@
 #include "Database.h"
+#include <cstdlib>
 #include "config.h"
 #include "User.h"
 #include "UserRepository.h"
 #include <limits>
 
-void displayMenu() {
+void clearConsole()
+{
+//czyszczenie konsoli
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+}
+
+void displayMenu()
+{
+    //Wyświetlanie menu
     cout << endl << "----System Biblioteczny----" << endl;
     cout << "1. Dodaj użytkownika" << endl;
     cout << "2. Usuń użytkownika" << endl;
@@ -13,15 +26,20 @@ void displayMenu() {
     cout << "Wybierz opcję: ";
 }
 
-int main() {
-    try {
+int main()
+{
+    try
+    {
         // Utworzenie połączenia z bazą danych
         Database db(DB_HOST, DB_USER, DB_PASS, DB_NAME);
         UserRepository* repo = UserRepository::getInstance(db);
+
+        clearConsole();
         
         int choice = -1;
         
-        do {
+        do
+        {
             displayMenu();
             cin >> choice;
             
@@ -38,6 +56,7 @@ int main() {
                 case 1:
                 {
                     // Dodawanie użytkownika
+                    clearConsole();
                     string name, surname;
                     cout << endl << "Dodawanie nowego użytkownika:" << endl;
                     cout << "Podaj imię: ";
@@ -58,6 +77,7 @@ int main() {
                 }
                 case 2:
                     // Usuwanie użytkownika
+                    clearConsole();
                     int id;
                     cout << endl << "Lista użytkowników:" << endl;
                     repo->displayAll();
@@ -65,6 +85,7 @@ int main() {
                     cout << endl << "Usuwanie użytkownika:" << endl;
                     cout << "Podaj ID użytkownika do usunięcia: ";
                     cin >> id;
+                    clearConsole();
                     if (cin.fail())
                     {
                         cin.clear();
@@ -75,7 +96,7 @@ int main() {
                     // Walidacja istnienia w repozytorium
                     if (!repo->exists(id))
                     {
-                        cout << "Użytkownik o ID= " << id << " nie istnieje." << endl;
+                        cout << "Użytkownik o ID = " << id << " nie istnieje." << endl;
                         break;
                     }
                     if (repo->remove(id))
@@ -89,6 +110,7 @@ int main() {
                 
                 case 3:
                     // Wyświetlanie użytkowników
+                    clearConsole();
                     cout << endl << "Lista użytkowników:" << endl;
                     repo->displayAll();
                     break;
@@ -98,6 +120,7 @@ int main() {
                     break;
 
                 default:
+                    clearConsole();
                     cout << "Nieznana opcja. Spróbuj ponownie." << endl;
             }
             
