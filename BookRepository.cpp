@@ -42,7 +42,6 @@ std::vector<Book> BookRepository::getAll() {
 
 void BookRepository::displayAll() const {
     auto books = const_cast<BookRepository*>(this)->getAll();
-    std::cout << "Lista książek:\n";
     for (auto& b : books) {
         std::cout << b << "\n";
     }

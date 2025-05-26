@@ -45,6 +45,7 @@ int main()
         
         do
         {
+            clearConsole();
             displayMenu();
             cin >> choice;
             
@@ -123,13 +124,13 @@ int main()
                 case 4: {
                     // Dodawanie książki
                     clearConsole();
-                    std::cin.ignore(); 
-                    std::string title, author;
+                    cin.ignore(); 
+                    string title, author;
                     int year;
-                    std::cout << "\nDodawanie nowej książki:\n";
-                    std::cout << "Tytuł: ";   std::getline(std::cin, title);
-                    std::cout << "Autor: ";   std::getline(std::cin, author);
-                    std::cout << "Rok wydania: "; std::cin >> year;
+                    cout << "\nDodawanie nowej książki:\n";
+                    cout << "Tytuł: ";   getline(cin, title);
+                    cout << "Autor: ";   getline(cin, author);
+                    cout << "Rok wydania: "; cin >> year;
                     Book newBook(0, title, author, year);
                     bookRepo.add(newBook);
                     break;
@@ -138,8 +139,8 @@ int main()
                     // Usuwanie książki
                     clearConsole();
                     int bookId;
-                    std::cout << "\nLista książek:\n"; bookRepo.displayAll();
-                    std::cout << "\nPodaj ID książki do usunięcia: "; std::cin >> bookId;
+                    cout << "\nLista książek:\n"; bookRepo.displayAll();
+                    cout << "\nPodaj ID książki do usunięcia: "; cin >> bookId;
                     clearConsole();
                     bookRepo.remove(bookId);
                     
@@ -152,7 +153,7 @@ int main()
                 case 6:
                     // Wyświetlanie książek
                     clearConsole();
-                    std::cout << "\nLista książek:\n"; bookRepo.displayAll();
+                    cout << "\nLista książek:\n"; bookRepo.displayAll();
                     break;
 
                 
