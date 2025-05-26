@@ -4,6 +4,8 @@
 #include "User.h"
 #include "UserRepository.h"
 #include <limits>
+#include "Book.h"
+#include "BookRepository.h"
 
 void clearConsole()
 {
@@ -22,6 +24,9 @@ void displayMenu()
     cout << "1. Dodaj użytkownika" << endl;
     cout << "2. Usuń użytkownika" << endl;
     cout << "3. Wyświetl listę użytkowników" << endl;
+    cout << "4. Dodaj książkę" << endl;
+    cout << "5. Usuń książkę" << endl;
+    cout << "6. Wyświetl listę książek" << endl;
     cout << "0. Wyjdź" << endl;
     cout << "Wybierz opcję: ";
 }
@@ -33,7 +38,7 @@ int main()
         // Utworzenie połączenia z bazą danych
         Database db(DB_HOST, DB_USER, DB_PASS, DB_NAME);
         UserRepository* repo = UserRepository::getInstance(db);
-
+        BookRepository& bookRepo = BookRepository::getInstance(db);
         clearConsole();
         
         int choice = -1;
@@ -114,6 +119,43 @@ int main()
                     cout << endl << "Lista użytkowników:" << endl;
                     repo->displayAll();
                     break;
+
+                case 4: {
+                    // Dodawanie książki
+                    clearConsole();
+                    std::cin.ignore(); 
+                    std::string title, author;
+                    int year;
+                    std::cout << "\nDodawanie nowej książki:\n";
+                    std::cout << "Tytuł: ";   std::getline(std::cin, title);
+                    std::cout << "Autor: ";   std::getline(std::cin, author);
+                    std::cout << "Rok wydania: "; std::cin >> year;
+                    Book newBook(0, title, author, year);
+                    bookRepo.add(newBook);
+                    break;
+                }
+                case 5: {
+                    // Usuwanie książki
+                    clearConsole();
+                    int bookId;
+                    std::cout << "\nLista książek:\n"; bookRepo.displayAll();
+                    std::cout << "\nPodaj ID książki do usunięcia: "; std::cin >> bookId;
+                    clearConsole();
+                    bookRepo.remove(bookId);
+                    
+                     
+
+                 
+
+                    break;
+                }
+                case 6:
+                    // Wyświetlanie książek
+                    clearConsole();
+                    std::cout << "\nLista książek:\n"; bookRepo.displayAll();
+                    break;
+
+                
 
                 case 0:
                     cout << "Zamykanie aplikacji..." << endl;
