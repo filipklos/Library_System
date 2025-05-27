@@ -128,8 +128,8 @@ int main()
                     repo->displayAll();
                     break;
 
+                
                 case 4: {
-                      case 4: {
                     // Dodawanie książki
                     clearConsole();
                     cin.ignore(); 
@@ -145,7 +145,7 @@ int main()
                     bookRepo.add(newBook);
                     break;
                 }
-                }
+                
                 case 5: {
                     // Usuwanie książki
                     clearConsole();
