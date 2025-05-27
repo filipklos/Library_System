@@ -129,18 +129,22 @@ int main()
                     break;
 
                 case 4: {
+                      case 4: {
                     // Dodawanie książki
                     clearConsole();
                     cin.ignore(); 
-                    string title, author;
+                    string title, author,genre;
                     int year;
                     cout << "\nDodawanie nowej książki:\n";
-                    cout << "Tytuł: ";   getline(cin, title);
-                    cout << "Autor: ";   getline(cin, author);
+                    cout << "Tytuł: ";  getline(cin, title);
+                    cout << "Autor: ";  getline(cin, author);
                     cout << "Rok wydania: "; cin >> year;
-                    Book newBook(0, title, author, year);
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "Gatunek: ";   getline(cin, genre);
+                    Book newBook(0, title, author, year, genre);
                     bookRepo.add(newBook);
                     break;
+                }
                 }
                 case 5: {
                     // Usuwanie książki
