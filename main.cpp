@@ -6,6 +6,8 @@
 #include <limits>
 #include "Book.h"
 #include "BookRepository.h"
+#include "LoanRepository.h"
+#include "Loan.h"
 
 void clearConsole()
 {
@@ -27,6 +29,10 @@ void displayMenu()
     cout << "4. Dodaj książkę" << endl;
     cout << "5. Usuń książkę" << endl;
     cout << "6. Wyświetl listę książek" << endl;
+    cout << "7. Wypożycz książkę"<<endl;
+    cout << "8. Zwróć książkę"<<endl;
+    cout << "9. Wyświetl aktywne wypożyczenia"<<endl;
+    cout << "10. Wyświetl historię wypożyczeń"<<endl;
     cout << "0. Wyjdź" << endl;
     cout << "Wybierz opcję: ";
 }
@@ -39,6 +45,7 @@ int main()
         Database db(DB_HOST, DB_USER, DB_PASS, DB_NAME);
         UserRepository* repo = UserRepository::getInstance(db);
         BookRepository& bookRepo = BookRepository::getInstance(db);
+        LoanRepository& loanRepo = LoanRepository::getInstance(db);
         clearConsole();
         
         int choice = -1;
@@ -123,14 +130,16 @@ int main()
                 case 4: {
                     // Dodawanie książki
                     clearConsole();
-                    std::cin.ignore(); 
-                    std::string title, author;
+                    cin.ignore(); 
+                    string title, author,genre;
                     int year;
-                    std::cout << "\nDodawanie nowej książki:\n";
-                    std::cout << "Tytuł: ";   std::getline(std::cin, title);
-                    std::cout << "Autor: ";   std::getline(std::cin, author);
-                    std::cout << "Rok wydania: "; std::cin >> year;
-                    Book newBook(0, title, author, year);
+                    cout << "\nDodawanie nowej książki:\n";
+                    cout << "Tytuł: ";  getline(cin, title);
+                    cout << "Autor: ";  getline(cin, author);
+                    cout << "Rok wydania: "; cin >> year;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "Gatunek: ";   getline(cin, genre);
+                    Book newBook(0, title, author, year, genre);
                     bookRepo.add(newBook);
                     break;
                 }
@@ -138,24 +147,50 @@ int main()
                     // Usuwanie książki
                     clearConsole();
                     int bookId;
-                    std::cout << "\nLista książek:\n"; bookRepo.displayAll();
-                    std::cout << "\nPodaj ID książki do usunięcia: "; std::cin >> bookId;
+                    cout << "\nLista książek:\n"; bookRepo.displayAll();
+                    cout << "\nPodaj ID książki do usunięcia: "; cin >> bookId;
                     clearConsole();
                     bookRepo.remove(bookId);
                     
-                     
-
-                 
 
                     break;
                 }
                 case 6:
                     // Wyświetlanie książek
                     clearConsole();
-                    std::cout << "\nLista książek:\n"; bookRepo.displayAll();
+                    cout << "\nLista książek:\n"; bookRepo.displayAll();
                     break;
 
-                
+                case 7: {
+                    // Wypożyczanie książki
+                    clearConsole();
+                    int uId, bId;
+                    cout << "Podaj ID użytkownika: "; cin >> uId;
+                    cout << "Podaj ID książki: ";     cin >> bId;
+                    loanRepo.borrowBook(uId, bId);
+                break;
+                }
+
+                case 8: {
+                    // Zwracanie książki
+                    clearConsole();
+                    int bId;
+                    cout << "Podaj ID książki do zwrotu: "; cin >> bId;
+                    loanRepo.returnBook(bId);
+                break;
+                }
+
+                case 9:
+                // Wyświetlanie aktywnych wypożyczeń
+                clearConsole();
+                loanRepo.displayActiveLoans();
+                break;
+
+                case 10:
+                // Wyświetlanie historii wypożyczeń
+                clearConsole();
+                loanRepo.displayLoanHistory();
+                break;
 
                 case 0:
                     cout << "Zamykanie aplikacji..." << endl;
