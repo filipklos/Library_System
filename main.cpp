@@ -52,6 +52,7 @@ int main()
         
         do
         {
+            clearConsole();
             displayMenu();
             cin >> choice;
             
@@ -131,15 +132,13 @@ int main()
                     // Dodawanie książki
                     clearConsole();
                     cin.ignore(); 
-                    string title, author,genre;
+                    string title, author;
                     int year;
                     cout << "\nDodawanie nowej książki:\n";
-                    cout << "Tytuł: ";  getline(cin, title);
-                    cout << "Autor: ";  getline(cin, author);
+                    cout << "Tytuł: ";   getline(cin, title);
+                    cout << "Autor: ";   getline(cin, author);
                     cout << "Rok wydania: "; cin >> year;
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    cout << "Gatunek: ";   getline(cin, genre);
-                    Book newBook(0, title, author, year, genre);
+                    Book newBook(0, title, author, year);
                     bookRepo.add(newBook);
                     break;
                 }
