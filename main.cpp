@@ -52,7 +52,7 @@ int main()
         
         do
         {
-            clearConsole();
+           
             displayMenu();
             cin >> choice;
             
