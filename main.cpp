@@ -8,6 +8,7 @@
 #include "BookRepository.h"
 #include "LoanRepository.h"
 #include "Loan.h"
+#include "Validation.h" 
 
 void clearConsole()
 {
@@ -68,14 +69,28 @@ int main()
             switch (choice) {
                 case 1:
                 {
-                    // Dodawanie użytkownika
+                    // DODANIE UŻYTKOWNIKA
                     clearConsole();
-                    string name, surname;
-                    cout << endl << "Dodawanie nowego użytkownika:" << endl;
-                    cout << "Podaj imię: ";
-                    cin >> name;
-                    cout << "Podaj nazwisko: ";
-                    cin >> surname;
+                    // WALIDACJA: imię musi mieć 3–100 znaków
+                    string name;
+                    do {
+                        cout << endl << "Dodawanie nowego użytkownika:" << endl;
+                        cout << "Podaj imię: ";
+                        cin >> name;
+                        if (!Validator::isStringValid(name)) {
+                            cout << "Imię musi mieć od 3 do 100 znaków. Spróbuj ponownie." << endl;
+                        }
+                    } while (!Validator::isStringValid(name));
+
+                    string surname;
+                    // WALIDACJA: nazwisko musi mieć 3–100 znaków
+                    do {
+                        cout << "Podaj nazwisko: ";
+                        cin >> surname;
+                        if (!Validator::isStringValid(surname)) {
+                            cout << "Nazwisko musi mieć od 3 do 100 znaków. Spróbuj ponownie." << endl;
+                        }
+                    } while (!Validator::isStringValid(surname));
                     
                     User newUser(name, surname);
                     
@@ -88,8 +103,9 @@ int main()
                     }
                     break;
                 }
+
                 case 2:
-                    // Usuwanie użytkownika
+                    // USUWANIE UŻYTKOWNIKA
                     clearConsole();
                     int id;
                     cout << endl << "Lista użytkowników:" << endl;
@@ -98,7 +114,7 @@ int main()
                     cout << endl << "Usuwanie użytkownika:" << endl;
                     cout << "Podaj ID użytkownika do usunięcia: ";
                     cin >> id;
-                    clearConsole();
+                    // WALIDACJA: ID użytkownika musi być liczbą
                     if (cin.fail())
                     {
                         cin.clear();
@@ -119,6 +135,11 @@ int main()
                     {
                         cout << "Błąd podczas usuwania użytkownika!" << endl;
                     }
+
+                    // Sprawdzenie, czy użytkownik ma aktywne wypożyczenia
+                    if (Validator::userHasActiveLoans(db, id)) {
+                        cout << "Użytkownik ma aktywne wypożyczenia. Nie można go usunąć." << endl;
+                    }
                     break;
                 
                 case 3:
@@ -129,58 +150,142 @@ int main()
                     break;
 
                 
-                case 4: {
+                 case 4: {
                     // Dodawanie książki
                     clearConsole();
-                    cin.ignore(); 
-                    string title, author,genre;
+                    cin.ignore(std::numeric_limits<streamsize>::max(), '\n');
+                    string title, author, genre;
                     int year;
+
                     cout << "\nDodawanie nowej książki:\n";
-                    cout << "Tytuł: ";  getline(cin, title);
-                    cout << "Autor: ";  getline(cin, author);
-                    cout << "Rok wydania: "; cin >> year;
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    cout << "Gatunek: ";   getline(cin, genre);
+
+                    // WALIDACJA: tytuł 3–100 znaków
+                    do {
+                        cout << "Tytuł: ";
+                        getline(cin, title);
+                        if (!Validator::isStringValid(title)) {
+                            cout << "Tytuł musi mieć od 3 do 100 znaków. Spróbuj ponownie." << endl;
+                        }
+                    } while (!Validator::isStringValid(title));
+
+                    // WALIDACJA: autor 3–100 znaków
+                    do {
+                        cout << "Autor: ";
+                        getline(cin, author);
+                        if (!Validator::isStringValid(author)) {
+                            cout << "Autor musi mieć od 3 do 100 znaków. Spróbuj ponownie." << endl;
+                        }
+                    } while (!Validator::isStringValid(author));
+
+                    // WALIDACJA: poprawny format roku (liczba całkowita)
+                    while (true) {
+                        cout << "Rok wydania: ";
+                        if (!(cin >> year)) {
+                            cin.clear();
+                            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                            cout << "Niepoprawny format roku. Podaj ponownie." << endl;
+                            continue;
+                        }
+                        if (year <= 0 || year > 2025) {
+                            cout << "Rok wydania musi być w zakresie od 0 DO 2025. Spróbuj ponownie." << endl;
+                            continue;
+                        }
+
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        break;
+                    }
+
+                    // WALIDACJA: gatunek 3–100 znaków
+                    do {
+                        cout << "Gatunek: ";
+                        getline(cin, genre);
+                        if (!Validator::isStringValid(genre)) {
+                            cout << "Gatunek musi mieć od 3 do 100 znaków. Spróbuj ponownie." << endl;
+                        }
+                    } while (!Validator::isStringValid(genre));
+
                     Book newBook(0, title, author, year, genre);
                     bookRepo.add(newBook);
                     break;
                 }
-                
-                case 5: {
+                    
+
+                   case 5: {
                     // Usuwanie książki
                     clearConsole();
                     int bookId;
-                    cout << "\nLista książek:\n"; bookRepo.displayAll();
-                    cout << "\nPodaj ID książki do usunięcia: "; cin >> bookId;
-                    clearConsole();
-                    bookRepo.remove(bookId);
-                    
+                    cout << "\nLista książek:\n";
+                    bookRepo.displayAll();
 
+                    cout << "\nPodaj ID książki do usunięcia: ";
+                    cin >> bookId;
+                    clearConsole();
+                    // WALIDACJA: ID książki musi być liczbą
+                    if (cin.fail()) {
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        cout << "Nieprawidłowe ID książki." << endl;
+                        break;
+                    }
+                    // WALIDACJA: sprawdzenie istnienia książki
+                    if (!bookRepo.exists(bookId)) {
+                        cout << "Książka o ID = " << bookId << " nie istnieje." << endl;
+                        break;
+                    }
+                    // WALIDACJA: czy książka jest wypożyczona
+                    if (Validator::bookIsBorrowed(db, bookId)) {
+                        cout << "Książka jest aktualnie wypożyczona. Nie można jej usunąć." << endl;
+                        break;
+                    }
+                    bookRepo.remove(bookId);
                     break;
                 }
+
                 case 6:
                     // Wyświetlanie książek
                     clearConsole();
-                    cout << "\nLista książek:\n"; bookRepo.displayAll();
+                    cout << "\nLista książek:\n"; 
+                    bookRepo.displayAll();
                     break;
 
-                case 7: {
+             case 7: {
                     // Wypożyczanie książki
                     clearConsole();
                     int uId, bId;
-                    cout << "Podaj ID użytkownika: "; cin >> uId;
-                    cout << "Podaj ID książki: ";     cin >> bId;
+                    cout << "Podaj ID użytkownika: ";
+                    cin >> uId;
+                    if (cin.fail()) {
+                        cin.clear();
+                        cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
+                        cout << "Nieprawidłowe ID użytkownika." << endl;
+                        break;
+                    }
+                    cout << "Podaj ID książki: ";
+                    cin >> bId;
+                    if (cin.fail()) {
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        cout << "Nieprawidłowe ID książki." << endl;
+                        break;
+                    }
                     loanRepo.borrowBook(uId, bId);
-                break;
+                    break;
                 }
 
                 case 8: {
                     // Zwracanie książki
                     clearConsole();
                     int bId;
-                    cout << "Podaj ID książki do zwrotu: "; cin >> bId;
+                    cout << "Podaj ID książki do zwrotu: ";
+                    cin >> bId;
+                    if (cin.fail()) {
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        cout << "Nieprawidłowe ID książki." << endl;
+                        break;
+                    }
                     loanRepo.returnBook(bId);
-                break;
+                    break;
                 }
 
                 case 9:

@@ -1,11 +1,11 @@
 #include "LoanRepository.h"
 #include <iostream>
+#include "Validation.h" // Dodano walidację
 
 LoanRepository* LoanRepository::instance = nullptr;
 
 LoanRepository::LoanRepository(Database& db)
     : BaseRepository(db) {}
-
 
 LoanRepository& LoanRepository::getInstance(Database& db) {
     if (!instance) {
@@ -15,39 +15,25 @@ LoanRepository& LoanRepository::getInstance(Database& db) {
 }
 
 void LoanRepository::borrowBook(int userId, int bookId) {
-    
-    //Sprawdzenie istnienia użytkownika
-    auto resUser = db.executeQuery(
-        "SELECT id FROM users WHERE id = " + std::to_string(userId)
-    );
-    if (!resUser->next()) {
+    // Sprawdzenie istnienia użytkownika
+    if (!Validator::userExists(db, userId)) {
         std::cout << "Użytkownik o ID=" << userId << " nie istnieje.\n";
         return;
     }
 
-
-    //Sprawdzenie istnienia książki
-    auto resBook = db.executeQuery(
-        "SELECT id FROM books WHERE id = " + std::to_string(bookId)
-    );
-    if (!resBook->next()) {
+    // Sprawdzenie istnienia książki
+    if (!Validator::bookExists(db, bookId)) {
         std::cout << "Książka o ID=" << bookId << " nie istnieje.\n";
         return;
     }
 
-
-
-    //Sprawdzenie dostępności książki
-    auto resLoan = db.executeQuery(
-        "SELECT id FROM loans WHERE book_id = " + std::to_string(bookId) +
-        " AND return_date IS NULL"
-    );
-    if (resLoan->next()) {
+    // Sprawdzenie dostępności książki
+    if (!Validator::bookAvailable(db, bookId)) {
         std::cout << "Książka o ID=" << bookId << " jest już wypożyczona.\n";
         return;
     }
 
-    //Dodanie wypożyczenia
+    // Dodanie wypożyczenia
     db.executeUpdate(
         "INSERT INTO loans (user_id, book_id, borrow_date) VALUES (" +
         std::to_string(userId) + ", " + std::to_string(bookId) + ", CURDATE())"
@@ -56,7 +42,7 @@ void LoanRepository::borrowBook(int userId, int bookId) {
 }
 
 void LoanRepository::returnBook(int bookId) {
-    //Znalezienie wypożyczonej książki
+    // Sprawdzenie, czy istnieje aktywne wypożyczenie
     auto res = db.executeQuery(
         "SELECT id FROM loans WHERE book_id = " + std::to_string(bookId) +
         " AND return_date IS NULL"
@@ -67,7 +53,7 @@ void LoanRepository::returnBook(int bookId) {
     }
     int loanId = res->getInt("id");
 
-    //Ustawnie daty zwrotu
+    // Ustawienie daty zwrotu
     db.executeUpdate(
         "UPDATE loans SET return_date = CURDATE() WHERE id = " +
         std::to_string(loanId)

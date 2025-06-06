@@ -7,7 +7,9 @@ BookRepository* BookRepository::instance = nullptr;
 BookRepository::BookRepository(Database& db) : BaseRepository(db) {}
 
 BookRepository& BookRepository::getInstance(Database& db) {
-    if (!instance) instance = new BookRepository(db);
+    if (!instance) {
+        instance = new BookRepository(db);
+    }
     return *instance;
 }
 
@@ -25,6 +27,13 @@ void BookRepository::remove(int id) {
     std::ostringstream oss;
     oss << "DELETE FROM books WHERE id = " << id;
     db.executeUpdate(oss.str());
+}
+
+bool BookRepository::exists(int id) const {
+    auto res = db.executeQuery(
+        "SELECT id FROM books WHERE id = " + std::to_string(id)
+    );
+    return res->next();
 }
 
 std::vector<Book> BookRepository::getAll() {

@@ -14,5 +14,6 @@ public:
     void add(const Book& book);
     void remove(int id);
     std::vector<Book> getAll();
-    void displayAll() const;     
+    void displayAll() const;
+    bool exists(int id) const;     
 };
