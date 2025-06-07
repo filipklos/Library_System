@@ -53,7 +53,7 @@ int main()
         
         do
         {
-           
+            clearConsole();
             displayMenu();
             cin >> choice;
             
@@ -65,6 +65,7 @@ int main()
                 cout << "Nieprawidłowy wybór. Spróbuj ponownie." << endl;
                 continue;
             }
+            clearConsole();
             
             switch (choice) {
                 case 1:
@@ -93,6 +94,7 @@ int main()
                     } while (!Validator::isStringValid(surname));
                     
                     User newUser(name, surname);
+                    clearConsole();
                     
                     if (repo->add(newUser))
                     {
@@ -115,6 +117,7 @@ int main()
                     cout << "Podaj ID użytkownika do usunięcia: ";
                     cin >> id;
                     // WALIDACJA: ID użytkownika musi być liczbą
+                    clearConsole();
                     if (cin.fail())
                     {
                         cin.clear();
@@ -205,7 +208,15 @@ int main()
                     } while (!Validator::isStringValid(genre));
 
                     Book newBook(0, title, author, year, genre);
-                    bookRepo.add(newBook);
+
+                    clearConsole();
+                    if (bookRepo.add(newBook))
+                    {
+                        cout << "Książka dodana pomyślnie!" << endl;
+                    } else 
+                    {
+                        cout << "Błąd podczas dodawania książki!" << endl;
+                    }
                     break;
                 }
                     
@@ -237,14 +248,21 @@ int main()
                         cout << "Książka jest aktualnie wypożyczona. Nie można jej usunąć." << endl;
                         break;
                     }
-                    bookRepo.remove(bookId);
+
+                    if (bookRepo.remove(bookId))
+                    {
+                        cout << "Książka usunięta pomyślnie!" << endl;
+                    } else 
+                    {
+                        cout << "Błąd podczas usuwania książki!" << endl;
+                    }
                     break;
                 }
 
                 case 6:
                     // Wyświetlanie książek
                     clearConsole();
-                    cout << "\nLista książek:\n"; 
+                    cout << endl << "Lista książek:" << endl; 
                     bookRepo.displayAll();
                     break;
 
@@ -252,14 +270,20 @@ int main()
                     // Wypożyczanie książki
                     clearConsole();
                     int uId, bId;
+                    cout << endl << "Lista użytkowników:" << endl;
+                    repo->displayAll();
                     cout << "Podaj ID użytkownika: ";
                     cin >> uId;
+
                     if (cin.fail()) {
                         cin.clear();
                         cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
                         cout << "Nieprawidłowe ID użytkownika." << endl;
                         break;
                     }
+
+                    cout << endl << "Lista książek:" << endl; 
+                    bookRepo.displayAll();
                     cout << "Podaj ID książki: ";
                     cin >> bId;
                     if (cin.fail()) {
@@ -268,6 +292,7 @@ int main()
                         cout << "Nieprawidłowe ID książki." << endl;
                         break;
                     }
+                    clearConsole();
                     loanRepo.borrowBook(uId, bId);
                     break;
                 }
@@ -276,6 +301,7 @@ int main()
                     // Zwracanie książki
                     clearConsole();
                     int bId;
+                    loanRepo.displayActiveLoans();
                     cout << "Podaj ID książki do zwrotu: ";
                     cin >> bId;
                     if (cin.fail()) {
@@ -284,6 +310,7 @@ int main()
                         cout << "Nieprawidłowe ID książki." << endl;
                         break;
                     }
+                    clearConsole();
                     loanRepo.returnBook(bId);
                     break;
                 }

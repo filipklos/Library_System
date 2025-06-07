@@ -11,8 +11,8 @@ private:
 public:
     static BookRepository& getInstance(Database& db);
 
-    void add(const Book& book);
-    void remove(int id);
+    bool add(const Book& book);
+    bool remove(int id);
     std::vector<Book> getAll();
     void displayAll() const;
     bool exists(int id) const;     

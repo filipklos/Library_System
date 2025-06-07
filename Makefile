@@ -6,7 +6,7 @@ INCLUDES = -I/usr/local/mysql-connector-c++-8.4.0/include
 LIBS = -L/usr/local/mysql-connector-c++-8.4.0/lib64 -lmysqlcppconn8 -lmysqlcppconn
 
 
-SRC = main.cpp Database.cpp User.cpp UserRepository.cpp BaseRepository.cpp Book.cpp BookRepository.cpp
+SRC = main.cpp Database.cpp User.cpp UserRepository.cpp BaseRepository.cpp Book.cpp BookRepository.cpp Validation.cpp Loan.cpp LoanRepository.cpp
 OUT = app
 
 all: $(OUT)
