@@ -1,6 +1,6 @@
 #include "LoanRepository.h"
 #include <iostream>
-#include "Validation.h" // Dodano walidację
+#include "Validation.h" 
 
 LoanRepository* LoanRepository::instance = nullptr;
 

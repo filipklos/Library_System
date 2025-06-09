@@ -22,7 +22,7 @@ public:
         );
         return res->next();
     }
-    // Sprawdza, czy książka jest dostępna (nie jest wypożyczona)
+    // Sprawdza, czy książka jest dostępna 
     static bool bookAvailable(Database& db, int bookId) {
         auto res = db.executeQuery(
             "SELECT id FROM loans WHERE book_id = " + std::to_string(bookId) +
@@ -30,7 +30,7 @@ public:
         );
         return !res->next(); // jeśli nie znaleziono aktywnego wypożyczenia -> dostępna
     }
-    // Sprawdza, czy użytkownik ma aktywne (niewrócone) wypożyczenia
+    // Sprawdza, czy użytkownik ma aktywne wypożyczenia
     static bool userHasActiveLoans(Database& db, int userId) {
         auto res = db.executeQuery(
             "SELECT id FROM loans WHERE user_id = " + std::to_string(userId) +
@@ -38,7 +38,7 @@ public:
         );
         return res->next(); // jeśli znaleziono, użytkownik ma aktywne wypożyczenia
     }
-    // Sprawdza, czy książka jest wypożyczona (istnieje aktywne wypożyczenie)
+    // Sprawdza, czy książka jest wypożyczona 
     static bool bookIsBorrowed(Database& db, int bookId) {
         auto res = db.executeQuery(
             "SELECT id FROM loans WHERE book_id = " + std::to_string(bookId) +

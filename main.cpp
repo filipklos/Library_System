@@ -50,10 +50,9 @@ int main()
         clearConsole();
         
         int choice = -1;
-        
+        clearConsole();
         do
         {
-            clearConsole();
             displayMenu();
             cin >> choice;
             
